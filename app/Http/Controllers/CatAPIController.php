@@ -115,7 +115,6 @@ class CatAPIController extends Controller
                 fwrite($file, 'Error Code: '.$g_response['code']);
                 fwrite($file, 'Error: '.$g_response['body']);
                 fclose($file);
-                dd($g_response);
                 return ['status' => 2];
             }
         }
@@ -125,14 +124,15 @@ class CatAPIController extends Controller
     public function getVotesByUserId(){
         //Getting existent votes
         if(Request::get('user_id')){
-            $response = $this->catAPIRequest('GET','votes?limit=1000&sub_id='.Request::get('user_id'));
+
+            $response = $this->catAPIRequest('GET','votes?'.http_build_query(Request::all()));
 
             if(in_array($response['code'],[200,201])){
                 $my_votes = json_decode($response['body']);
 
                 if(is_countable($my_votes)){
                     if(count($my_votes)>0){
-                        return ['status' => 1, 'my_votes' => $my_votes];
+                        return ['status' => 1, 'my_votes' => $my_votes, 'debug' => 'votes?'.http_build_query(Request::all())];
                     }
                 }
             }

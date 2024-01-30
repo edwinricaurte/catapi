@@ -11,7 +11,7 @@ class APIAuth
 {
     public function handle($request, Closure $next): JsonResponse
     {
-        //Static Tokens for example. We can implement a database query to improve this workflow.
+        //Static Tokens for the example. We can implement a database query to improve this workflow.
         $valid_tokens = ['ABC123T','123TEST','zxy9090'];
         if(in_array($request->get('auth_token',null),$valid_tokens)) {
             return $next($request);

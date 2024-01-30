@@ -41,37 +41,42 @@
         vote_object.cat_id = cat_element.getAttribute('data-id');
         vote_object.value = btn.currentTarget.getAttribute('data-value');
 
-        response = await sendPostRequest('/api/vote/',vote_object);
+        response = await sendPostRequest('/vote/',vote_object);
 
-        let cat = document.getElementById('cat_'+vote_object.cat_id);
-        cat.querySelector('div.buttons').innerHTML = '';
-        let dislike_div = document.createElement('div');
-        dislike_div.classList.add('dislikes');
-        dislike_div.textContent = '';
-        let like_div = document.createElement('div');
-        like_div.textContent = '';
-        like_div.classList.add('likes');
-        let user_selection = document.createElement('img');
-        user_selection.classList.add('user-selection')
-        switch (vote_object.value){
-            case 'like':
-                user_selection.classList.add('user-selection')
-                user_selection.classList.add('liked')
-                user_selection.src = '/imgs/svg/like.svg';
-            break;
-            case ('dislike'):
-                user_selection.classList.add('user-selection')
-                user_selection.src = '/imgs/svg/dislike.svg';
-            break;
+        if(response.status == 1){
+            let cat = document.getElementById('cat_'+vote_object.cat_id);
+            cat.querySelector('div.buttons').innerHTML = '';
+            let dislike_div = document.createElement('div');
+            dislike_div.classList.add('dislikes');
+            dislike_div.textContent = '';
+            let like_div = document.createElement('div');
+            like_div.textContent = '';
+            like_div.classList.add('likes');
+            let user_selection = document.createElement('img');
+            user_selection.classList.add('user-selection')
+            switch (vote_object.value){
+                case 'like':
+                    user_selection.classList.add('user-selection')
+                    user_selection.classList.add('liked')
+                    user_selection.src = '/imgs/svg/like.svg';
+                    break;
+                case ('dislike'):
+                    user_selection.classList.add('user-selection')
+                    user_selection.src = '/imgs/svg/dislike.svg';
+                    break;
+            }
+            await cat.querySelector('div.buttons').appendChild(dislike_div);
+            await cat.querySelector('div.buttons').appendChild(user_selection);
+            await cat.querySelector('div.buttons').appendChild(like_div);
+            getVotesSummary();
+        } else {
+            cat_element.querySelector('.l-btn.dislike-btn').removeAttribute('disabled');
+            cat_element.querySelector('.l-btn.like-btn').removeAttribute('disabled');
         }
-        await cat.querySelector('div.buttons').appendChild(dislike_div);
-        await cat.querySelector('div.buttons').appendChild(user_selection);
-        await cat.querySelector('div.buttons').appendChild(like_div);
-        getVotesSummary();
     }
 
     async function getMyVotes(){
-        response = await sendPostRequest('/api/my-votes/');
+        response = await sendPostRequest('/my-votes/');
         if(response.my_votes){
             if(response.my_votes.length>0){
                 for(r_vote of response.my_votes){
@@ -105,7 +110,7 @@
     }
 
     async function getVotesSummary(){
-        response = await sendPostRequest('/api/votes-summary/');
+        response = await sendPostRequest('/votes-summary/');
         if(response.votes){
             if(response.votes.length>0){
                 for(cat_vote of response.votes){
@@ -133,7 +138,7 @@
         document.getElementById('cats_list').classList.add('slow-transition');
         document.getElementById('cats_list').classList.add('grayscale');
 
-        response = await sendPostRequest('/api/reset-votes');
+        response = await sendPostRequest('/reset-votes');
         if(response.status = 1){
             window.location.href = window.location.href;
         }
@@ -142,7 +147,6 @@
     async function sendPostRequest(url = null, data = {}) {
         data._token = document.querySelector('meta[name="_token"]').content;
         data.user_id = '{{Session::getId()}}';
-        data.auth_token = '123TEST';
         const response = await fetch(url, {
             method: 'POST',
             mode: 'cors',
