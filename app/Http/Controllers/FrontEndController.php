@@ -18,17 +18,30 @@ class FrontEndController extends Controller
         $vote->sub_id = Request::get('user_id',null);
 
         if(!is_null($vote->cat_id) and !is_null($vote->value) and !is_null($vote->user_id)){
-            $g_response = $this->APIRequest('POST','vote', json_encode($vote));
-            if(in_array($g_response['code'],[200,201])){
-                return ['status' => 1];
-            } else {
-                $file = fopen(storage_path('app/isg-api-error-log.txt'), 'a');
-                fwrite($file, "Date: ".date('m/d/Y h:i:s a')." \n");
-                fwrite($file, "Sending Vote to CatAPI \n");
-                fwrite($file, 'Error Code: '.$g_response['code']);
-                fwrite($file, 'Error: '.$g_response['body']);
-                fclose($file);
-                return ['status' => 2];
+
+            if(File::exists(storage_path('app/catapi-cats.json'))){
+                $file = file_get_contents(storage_path('app/catapi-cats.json'));
+                $cats_list = json_decode($file);
+                $cat_ids = [];
+                foreach($cats_list as &$cat){
+                    if(isset($cat->id)){
+                        $cat_ids[] = $cat->id;
+                    }
+                }
+                if(in_array($vote->cat_id,$cat_ids)){
+                    $g_response = $this->APIRequest('POST','vote', json_encode($vote));
+                    if(in_array($g_response['code'],[200,201])){
+                        return ['status' => 1];
+                    } else {
+                        $file = fopen(storage_path('app/isg-api-error-log.txt'), 'a');
+                        fwrite($file, "Date: ".date('m/d/Y h:i:s a')." \n");
+                        fwrite($file, "Sending Vote to CatAPI \n");
+                        fwrite($file, 'Error Code: '.$g_response['code']);
+                        fwrite($file, 'Error: '.$g_response['body']);
+                        fclose($file);
+                        return ['status' => 2];
+                    }
+                }
             }
         }
         return ['status' => 2];

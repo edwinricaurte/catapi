@@ -59,11 +59,11 @@
                     user_selection.classList.add('user-selection')
                     user_selection.classList.add('liked')
                     user_selection.src = '/imgs/svg/like.svg';
-                    break;
+                break;
                 case ('dislike'):
                     user_selection.classList.add('user-selection')
                     user_selection.src = '/imgs/svg/dislike.svg';
-                    break;
+                break;
             }
             await cat.querySelector('div.buttons').appendChild(dislike_div);
             await cat.querySelector('div.buttons').appendChild(user_selection);
@@ -80,29 +80,31 @@
         if(response.my_votes){
             if(response.my_votes.length>0){
                 for(r_vote of response.my_votes){
-                    let cat = document.getElementById('cat_'+r_vote.image_id);
-                    cat.querySelector('div.buttons').innerHTML = '';
-                    let dislike_div = document.createElement('div');
-                    dislike_div.classList.add('dislikes');
-                    dislike_div.textContent = '';
-                    let like_div = document.createElement('div');
-                    like_div.textContent = '';
-                    like_div.classList.add('likes');
-                    let user_selection = document.createElement('img');
-                    switch (true){
-                        case (r_vote.value>0):
-                            user_selection.classList.add('user-selection')
-                            user_selection.classList.add('liked')
-                            user_selection.src = '/imgs/svg/like.svg';
+                    if(document.querySelectorAll('#cat_'+r_vote.image_id).length>0){
+                        let cat = document.getElementById('cat_'+r_vote.image_id);
+                        cat.querySelector('div.buttons').innerHTML = '';
+                        let dislike_div = document.createElement('div');
+                        dislike_div.classList.add('dislikes');
+                        dislike_div.textContent = '';
+                        let like_div = document.createElement('div');
+                        like_div.textContent = '';
+                        like_div.classList.add('likes');
+                        let user_selection = document.createElement('img');
+                        switch (true){
+                            case (r_vote.value>0):
+                                user_selection.classList.add('user-selection')
+                                user_selection.classList.add('liked')
+                                user_selection.src = '/imgs/svg/like.svg';
                             break;
-                        case (r_vote.value<0):
-                            user_selection.classList.add('user-selection')
-                            user_selection.src = '/imgs/svg/dislike.svg';
+                            case (r_vote.value<0):
+                                user_selection.classList.add('user-selection')
+                                user_selection.src = '/imgs/svg/dislike.svg';
                             break;
+                        }
+                        await cat.querySelector('div.buttons').appendChild(dislike_div);
+                        await cat.querySelector('div.buttons').appendChild(user_selection);
+                        await cat.querySelector('div.buttons').appendChild(like_div);
                     }
-                    await cat.querySelector('div.buttons').appendChild(dislike_div);
-                    await cat.querySelector('div.buttons').appendChild(user_selection);
-                    await cat.querySelector('div.buttons').appendChild(like_div);
                 }
             }
             getVotesSummary();
@@ -114,17 +116,19 @@
         if(response.votes){
             if(response.votes.length>0){
                 for(cat_vote of response.votes){
-                    cat_container = document.getElementById('cat_'+cat_vote.cat_id);
-                    if(cat_container.querySelectorAll('.buttons.ready-to-vote').length==1 && cat_container.querySelectorAll('.buttons.ready-to-vote .likes').length>0){
-                        if(cat_vote.dislikes){
-                            cat_container.querySelector('.dislikes').textContent = cat_vote.dislikes;
-                        } else {
-                            cat_container.querySelector('.dislikes').textContent = 0;
-                        }
-                        if(cat_vote.likes){
-                            cat_container.querySelector('.likes').textContent = cat_vote.likes;
-                        } else {
-                            cat_container.querySelector('.likes').textContent = 0;
+                    if(document.querySelectorAll('#cat_'+cat_vote.cat_id).length>0){
+                        cat_container = document.getElementById('cat_'+cat_vote.cat_id);
+                        if(cat_container.querySelectorAll('.buttons.ready-to-vote').length==1 && cat_container.querySelectorAll('.buttons.ready-to-vote .likes').length>0){
+                            if(cat_vote.dislikes){
+                                cat_container.querySelector('.dislikes').textContent = cat_vote.dislikes;
+                            } else {
+                                cat_container.querySelector('.dislikes').textContent = 0;
+                            }
+                            if(cat_vote.likes){
+                                cat_container.querySelector('.likes').textContent = cat_vote.likes;
+                            } else {
+                                cat_container.querySelector('.likes').textContent = 0;
+                            }
                         }
                     }
                 }
