@@ -53,6 +53,7 @@ class FrontEndController extends Controller
             $isg_request = new \stdClass();
             $isg_request->limit = Request::get('limit',1000);
             $isg_request->user_id = Request::get('user_id',null);
+            $isg_request->sub_id = Request::get('user_id',null);
             $isg_request->auth_token = env('ISG_API_TOKEN');
 
             $response = $this->APIRequest('POST','my-votes',json_encode($isg_request));
